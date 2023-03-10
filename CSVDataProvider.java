@@ -21,51 +21,69 @@ public class CSVDataProvider implements dataProvider {
 
     @Override
     public String importTasks(String filename) throws IOException {
-        StringBuilder sb = new StringBuilder();
 
+        String result = new String();
         String row;
-        String[] rows;
+
         BufferedReader csvReader = new BufferedReader(new FileReader(filename));
         while ((row = csvReader.readLine()) != null) {
 
-            rows = row.split(";");
-            sb.append(rows[0] + "|");
-            sb.append(rows[1] + "|");
-            sb.append(rows[2] + "|");
-            sb.append(rows[3] + "|");
-            sb.append(rows[4] + "|");
-            sb.append(rows[5] + "|");
-            sb.append(rows[6] + "|");
+            String[] rows = row.split(";");
+            result = createImportTaskString(rows, "|");
 
-            sb.append("\n");
         }
         csvReader.close();
+        return result;
+    }
+
+    public String createImportTaskString(String[] rows, String divider) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(rows[0] + divider);
+        sb.append(rows[1] + divider);
+        sb.append(rows[2] + divider);
+        sb.append(rows[3] + divider);
+        sb.append(rows[4] + divider);
+        sb.append(rows[5] + divider);
+        sb.append(rows[6] + divider);
+        sb.append("\n");
+
         return sb.toString();
     }
 
     @Override
     public void exportTasks(String filename, task tasks) throws IOException {
         try (FileWriter csvWriter = new FileWriter(filename);) {
-            StringBuilder header = new StringBuilder();
-            for (int i = 0; i < 7; i++) {
-                header.append(headers[i] + ";");
-                System.out.println(header);
-            }
+            String header = createExportHeader();
             csvWriter.write(header.toString());
             csvWriter.write("\n");
-            StringBuilder sb = new StringBuilder();
-            sb.append(tasks.getId() + ";");
-            sb.append(tasks.getEntryDate() + ";");
-            sb.append(tasks.getEntryTime() + ";");
-            sb.append(tasks.getTask() + ";");
-            sb.append(tasks.getDeadline() + ";");
-            sb.append(tasks.getAuthorName() + ";");
-            sb.append(tasks.getPriority() + ";");
 
-            csvWriter.write(sb.toString());
+            String task = createExportString(tasks);
+            csvWriter.write(task);
 
         }
+
+    }
+
+    public String createExportHeader() {
+        StringBuilder header = new StringBuilder();
+        for (int i = 0; i < 7; i++) {
+            header.append(headers[i] + ";");
+            System.out.println(header);
+
+        }
+        return header.toString();
+    }
+
+    public String createExportString(task tasks) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(tasks.getId() + ";");
+        sb.append(tasks.getEntryDate() + ";");
+        sb.append(tasks.getEntryTime() + ";");
+        sb.append(tasks.getTask() + ";");
+        sb.append(tasks.getDeadline() + ";");
+        sb.append(tasks.getAuthorName() + ";");
+        sb.append(tasks.getPriority() + ";");
+        return sb.toString();
     }
 
 }
-
